@@ -180,6 +180,9 @@ class FullyConnectedNet(object):
         for i in range(1,self.num_layers+1):
             self.params['W'+str(i)]=weight_scale * np.random.randn(net_dims[i-1], net_dims[i])
             self.params['b'+str(i)] = np.zeros(net_dims[i])
+            if self.use_batchnorm and i!=self.num_layers:
+                self.params['gamma'+str(i)] = np.ones(net_dims[i])
+                self.params['beta'+str(i)] = np.zeros(net_dims[i])
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
@@ -200,7 +203,7 @@ class FullyConnectedNet(object):
         # pass of the second batch normalization layer, etc.
         self.bn_params = []
         if self.use_batchnorm:
-            self.bn_params = [{'mode': 'train'} for i in range(self.num_layers - 1)]
+            self.bn_params = [{'mode': 'train'} for i in range(self.num_layers-1)]
 
         # Cast all parameters to the correct datatype
         for k, v in self.params.items():
@@ -242,8 +245,13 @@ class FullyConnectedNet(object):
         for i in range(1,self.num_layers):
             hidden, cache = affine_forward(hidden, self.params['W'+str(i)], self.params['b'+str(i)])
             caches.append(cache)
+            if self.use_batchnorm:
+                bn_param=self.bn_params[i-1]
+                hidden, cache = batchnorm_forward(hidden, self.params['gamma'+str(i)], self.params['beta'+str(i)],bn_param)
+                caches.append(cache)
             hidden, cache = relu_forward(hidden)
             caches.append(cache)
+            
         scores, cache = affine_forward(hidden,self.params['W'+str(self.num_layers)],self.params['b'+str(self.num_layers)])
         ############################################################################
         #                             END OF YOUR CODE                             #
@@ -279,6 +287,9 @@ class FullyConnectedNet(object):
             num = str(idx)
             cache = caches.pop()
             dgrad = relu_backward(dgrad,cache)
+            if self.use_batchnorm:
+                cache = caches.pop()
+                dgrad, grads['gamma'+num], grads['beta'+num] = batchnorm_backward(dgrad,cache)
             cache = caches.pop()
             dgrad, grads['W'+num], grads['b'+num] = affine_backward(dgrad, cache)
             grads['W'+num]+=self.reg*self.params['W'+num]
