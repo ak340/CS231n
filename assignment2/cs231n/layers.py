@@ -249,7 +249,6 @@ def batchnorm_backward(dout, cache):
     dx = dxmu
     dmean = - np.sum(dxmu, axis=0)
     dx += 1.0 / N * np.ones((dxmu.shape)) * dmean
-    
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
