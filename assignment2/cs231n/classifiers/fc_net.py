@@ -251,6 +251,9 @@ class FullyConnectedNet(object):
                 caches.append(cache)
             hidden, cache = relu_forward(hidden)
             caches.append(cache)
+            if self.use_dropout:
+                hidden, cache = dropout_forward(hidden, self.dropout_param)
+                caches.append(cache)
             
         scores, cache = affine_forward(hidden,self.params['W'+str(self.num_layers)],self.params['b'+str(self.num_layers)])
         ############################################################################
@@ -285,6 +288,9 @@ class FullyConnectedNet(object):
         
         for idx in range(n,0,-1):
             num = str(idx)
+            if self.use_dropout:
+                cache = caches.pop()
+                dgrad = dropout_backward(dgrad, cache)
             cache = caches.pop()
             dgrad = relu_backward(dgrad,cache)
             if self.use_batchnorm:
