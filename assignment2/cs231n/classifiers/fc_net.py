@@ -6,6 +6,7 @@ from cs231n.layers import *
 from cs231n.layer_utils import *
 
 
+
 class TwoLayerNet(object):
     """
     A two-layer fully-connected neural network with ReLU nonlinearity and
