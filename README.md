@@ -1,6 +1,6 @@
 # CS231n: Convolutional Neural Networks for Visual Recognition
 
-This repository contains my assignment solutions of the [course](http://cs231n.stanford.edu/) from Stanford. 
+This repository contains my assignment solutions of the [course](http://cs231n.stanford.edu/) from Stanford.   
 There are three assignments:
 1) [Assignment 1](/assignment1):
 Implementations of k-Nearest Neighbours, Support Vector Machine and SoftMax loss functions, and two-layer network.
